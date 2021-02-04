@@ -1,23 +1,24 @@
-const throttle = (fn, delay) => {
-  let inDebounce;
+const throttle = (fn, time) => {
+  let throttleFn = false;
 
-  return function () {
-    if (inDebounce) {
-      return;
+  return () => {
+    if (!throttleFn) {
+      let ctx = this;
+      let args = arguments;
+      fn.apply(ctx, args);
+      throttleFn = true;
+      setTimeout(() => {
+        throttleFn = false;
+      }, time);
     }
-    clearTimeout(inDebounce);
-    inDebounce = setTimeout(() => {
-      fn.apply(this, arguments);
-    }, delay);
   };
 };
 
-const throttleFn = throttle(() => {
-  console.log("hello");
-}, 300);
+let counter = 0;
 
-throttleFn();
-throttleFn();
-throttleFn();
-throttleFn();
-throttleFn();
+setInterval(
+  throttle(() => {
+    console.log(counter++);
+  }, 1000),
+  10
+);
